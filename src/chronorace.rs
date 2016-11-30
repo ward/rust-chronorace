@@ -2,7 +2,7 @@
 
 use athlete;
 
-fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
+pub fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
     // 1. Check what headers are present in the page
     // 2. Link them to the properties we use
     // 3. Parse the athlete results to get the actual values, creating Athlete and adding to the
@@ -73,6 +73,7 @@ fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
             let ranklast = rank.len() - 1;
             rank.remove(ranklast);
             athlete.rank = rank.parse().unwrap();
+            //TODO Not everyone has a rank... See how to handle DNF etc
 
             let nr = strip_tags(cells[interestingcolumns[1]].to_string());
             athlete.bib = Some(nr.parse().unwrap());
@@ -127,7 +128,7 @@ fn strip_tags(taggedstr: String) -> String {
 }
 
 /// Given a chronorace source string, gets the urls for the following pages of the results.
-fn parse_page_urls(content: &String) -> Vec<String> {
+pub fn parse_page_urls(content: &String) -> Vec<String> {
     let startidx = match content.find("<b>Page: </b>") {
         Some(idx) => idx,
         None => 0
