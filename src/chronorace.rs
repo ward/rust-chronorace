@@ -16,6 +16,9 @@ fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
     // These are located in the header row and then used for every result row.
     let mut interestingcolumns = Vec::new();
 
+    // Holds the athletes at the end
+    let mut athletes = Vec::new();
+
     for row in resultstable.split("</tr>") {
 
         // In the header, we check which columns have the information we
@@ -60,7 +63,7 @@ fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
         // The assumption here is that their order will always be the same.
         // That is: Pos, Nr, Gender, Name, Age, Time, City
         if row.contains("<tr class=\"Even\">") || row.contains("<tr class=\"Odd\">") {
-            println!("Athlete unparsed: {}", row);
+            //println!("Athlete unparsed: {}", row);
             let cells: Vec<&str> = row.split("</td>").collect();
 
             let mut athlete = athlete::Athlete::new();
@@ -79,11 +82,28 @@ fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
                 athlete.gender = athlete::Gender::Female;
             }
 
-            println!("Athlete: {:?}", athlete);
+            athlete.name = strip_tags(cells[interestingcolumns[3]].to_string());
+
+            let mut guntime = strip_tags(cells[interestingcolumns[5]].to_string());
+            if guntime.chars().filter(|&c| c == ':').count() == 1 {
+                let time = guntime;
+                guntime = "0:".to_string();
+                guntime.push_str(&time);
+            }
+            athlete.guntime = guntime;
+
+            let location = strip_tags(cells[interestingcolumns[6]].to_string());
+            let location = location.trim();
+            if location != "" {
+                athlete.location = Some(location.to_string());
+            }
+
+            //println!("Athlete: {:?}", athlete);
+            athletes.push(athlete);
         }
     }
 
-    return Vec::new();
+    return athletes;
 }
 
 fn strip_tags(taggedstr: String) -> String {
