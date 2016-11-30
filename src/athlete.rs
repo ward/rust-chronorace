@@ -7,11 +7,11 @@ pub struct Athlete {
     pub bib: Option<u32>,
     pub name: String, // Last name first name, required
     pub gender: Gender, // Male / female, required
-    pub guntime: u32, // Seconds, required
+    pub guntime: String, // Laziness just copies the string, required
     pub year_of_birth: Option<u16>,
     pub date_of_birth: Option<String>, // yyyy-mm-dd
     pub location: Option<String>,
-    pub chiptime: Option<u32>, // Seconds
+    pub chiptime: Option<String>, // Laziness, just copy the string
 }
 
 #[derive(Debug)]
@@ -30,7 +30,7 @@ impl Athlete {
             bib: None,
             name: "".to_string(),
             gender: Gender::Male,
-            guntime: 0,
+            guntime: "".to_string(),
             year_of_birth: None,
             date_of_birth: None,
             location: None,
@@ -38,75 +38,71 @@ impl Athlete {
         }
     }
 
-    pub fn rank(&mut self, rank: u32) -> &Athlete {
-        self.rank = rank;
-        self
-    }
+    // Plaats;Borstnummer;Achternaam Voornaam;Geslacht (M/F);Bruto tijd (hh:mm:ss);geboortejaar
+    // (yyyy);geboortedatum(yyyy-mm-dd);woonplaats;Netto tijd
+    pub fn to_csv(&self) -> String {
+        let mut result = String::new();
+        result.push_str(& self.rank.to_string());
+        result.push(';');
 
-    pub fn bib(&mut self, bib: u32) -> &Athlete {
-        self.bib = Some(bib);
-        self
-    }
+        match self.bib {
+            Some(bib) => result.push_str(& bib.to_string()),
+            None => {},
+        };
 
-    pub fn name(&mut self, name: String) -> &Athlete {
-        self.name = name;
-        self
-    }
+        result.push(';');
+        result.push_str(&self.name);
+        result.push(';');
 
-    pub fn gender(&mut self, gender: Gender) -> &Athlete {
-        self.gender = gender;
-        self
-    }
+        match self.gender {
+            Gender::Male => result.push('M'),
+            Gender::Female => result.push('F'),
+        };
 
-    pub fn guntime(&mut self, time: u32) -> &Athlete {
-        self.guntime = time;
-        self
-    }
+        result.push(';');
+        result.push_str(&self.guntime);
+        result.push(';');
 
-    pub fn year_of_birth(&mut self, year: u16) -> &Athlete {
-        self.year_of_birth = Some(year);
-        self
-    }
+        match self.year_of_birth {
+            Some(year) => result.push_str(& year.to_string()),
+            None => {},
+        };
 
-    pub fn date_of_birth(&mut self, date: String) -> &Athlete {
-        self.date_of_birth = Some(date);
-        self
-    }
+        result.push(';');
 
-    pub fn location(&mut self, location: String) -> &Athlete {
-        self.location = Some(location);
-        self
-    }
+        match self.date_of_birth {
+            Some(ref date) => result.push_str(&date),
+            None => {},
+        }
 
-    pub fn chiptime(&mut self, time: u32) -> &Athlete {
-        self.chiptime = Some(time);
-        self
-    }
+        result.push(';');
 
-    // TODO? A from_str static method
+        match self.location {
+            Some(ref loc) => result.push_str(&loc),
+            None => {},
+        }
+
+        result.push(';');
+
+        match self.chiptime {
+            Some(ref time) => result.push_str(&time),
+            None => {},
+        }
+
+        return result
+    }
 }
 
-/*
 #[test]
-fn build_athlete() {
-    let athlete = Athlete::new()
-                            .rank(10)
-                            .bib(1234)
-                            .name("Muylaert Ward".to_string())
-                            .gender(Gender::Female)
-                            .guntime(1000)
-                            .year_of_birth(1989)
-                            .date_of_birth("1989-04-24".to_string())
-                            .location("Brussels, Belgium".to_string())
-                            .chiptime(950);
-
-    assert_eq!(athlete.rank, 10);
-    assert_eq!(athlete.bib, Some(1234));
-    assert_eq!(athlete.name, "Muylaert Ward");
-    assert_eq!(athlete.gender, Gender::Female);
-
-    // Testing how the entire thing looks with print and break
-    //println!("{:?}", athlete);
-    //assert!(false);
+fn test_to_csv() {
+    let mut athlete = Athlete::new();
+    assert_eq!(athlete.to_csv(), "0;;;M;;;;;");
+    athlete.rank = 10;
+    athlete.name = "Muylaert Ward".to_string();
+    athlete.gender = Gender::Female;
+    athlete.guntime = "0:39:45".to_string();
+    assert_eq!(athlete.to_csv(), "10;;Muylaert Ward;F;0:39:45;;;;");
+    athlete.location = Some("Brussels, Belgium".to_string());
+    athlete.chiptime = Some("0:39:44".to_string());
+    assert_eq!(athlete.to_csv(), "10;;Muylaert Ward;F;0:39:45;;;Brussels, Belgium;0:39:44");
 }
-*/
