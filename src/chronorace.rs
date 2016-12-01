@@ -40,10 +40,10 @@ pub fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
                                     interestingcolumns.push(i);
                                 }
                             }
-                            "Pos" | "Nr" | "Age" | "Time" | "City" => {
+                            "Pos" | "Nr" | "Age" | "Time" | "City" | "Leef." | "Tijd" | "Gemeente" => {
                                 interestingcolumns.push(i);
                             }
-                            "Name" => {
+                            "Name" | "Naam" => {
                                 // Name can also be in the category column.
                                 // We only care about the first one.
                                 if !namefound {
@@ -59,6 +59,8 @@ pub fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
             }
         }
 
+        assert_eq!(interestingcolumns.len(), 7);
+
         // Once we reach the rows, we can focus on just those indices.
         // The assumption here is that their order will always be the same.
         // That is: Pos, Nr, Gender, Name, Age, Time, City
@@ -72,7 +74,11 @@ pub fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
             let mut rank = strip_tags(cells[interestingcolumns[0]].to_string());
             let ranklast = rank.len() - 1;
             rank.remove(ranklast);
-            athlete.rank = rank.parse().unwrap();
+            match rank.parse() {
+                Ok(r) => athlete.rank = r,
+                _ => continue,
+            };
+            //athlete.rank = rank.parse().unwrap();
             // TODO Not everyone has a rank... See how to handle DNF etc
 
             let nr = strip_tags(cells[interestingcolumns[1]].to_string());
@@ -185,4 +191,11 @@ fn test_parse_athletes() {
     let content = include_str!("test-chronorace.html").to_string();
     let athletes = parse_athletes(&content);
     assert_eq!(athletes.len(), 500);
+}
+
+#[test]
+fn test_dnf_parse_athletes() {
+    let content = include_str!("./test-chronorace-with-dnf.html").to_string();
+    let athletes = parse_athletes(&content);
+    assert_eq!(athletes.len(), 298);
 }

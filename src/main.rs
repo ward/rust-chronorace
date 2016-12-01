@@ -20,7 +20,7 @@ fn main() {
 
     // Panic if no URL supplied
     let url = matches.value_of("URL").unwrap();
-    println!("You provided the following URL: {}", url);
+    //println!("You provided the following URL: {}", url);
 
     let mut response = reqwest::get(url).unwrap();
     let mut content = String::new();
