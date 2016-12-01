@@ -1,5 +1,3 @@
-// extern crate regex;
-
 use athlete;
 
 pub fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
@@ -40,7 +38,8 @@ pub fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
                                     interestingcolumns.push(i);
                                 }
                             }
-                            "Pos" | "Nr" | "Age" | "Time" | "City" | "Leef." | "Tijd" | "Gemeente" => {
+                            "Pos" | "Nr" | "Age" | "Time" | "City" | "Leef." | "Tijd" |
+                            "Gemeente" => {
                                 interestingcolumns.push(i);
                             }
                             "Name" | "Naam" => {
@@ -78,7 +77,7 @@ pub fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
                 Ok(r) => athlete.rank = r,
                 _ => continue,
             };
-            //athlete.rank = rank.parse().unwrap();
+            // athlete.rank = rank.parse().unwrap();
             // TODO Not everyone has a rank... See how to handle DNF etc
 
             let nr = strip_tags(cells[interestingcolumns[1]].to_string());

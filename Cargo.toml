@@ -5,5 +5,4 @@ authors = ["Ward Muylaert <ward.muylaert@gmail.com>"]
 
 [dependencies]
 clap = "2.19.0"
-regex = "0.1"
 reqwest = "0.1.0"
