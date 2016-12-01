@@ -42,12 +42,12 @@ impl Athlete {
     // (yyyy);geboortedatum(yyyy-mm-dd);woonplaats;Netto tijd
     pub fn to_csv(&self) -> String {
         let mut result = String::new();
-        result.push_str(& self.rank.to_string());
+        result.push_str(&self.rank.to_string());
         result.push(';');
 
         match self.bib {
-            Some(bib) => result.push_str(& bib.to_string()),
-            None => {},
+            Some(bib) => result.push_str(&bib.to_string()),
+            None => {}
         };
 
         result.push(';');
@@ -64,32 +64,32 @@ impl Athlete {
         result.push(';');
 
         match self.year_of_birth {
-            Some(year) => result.push_str(& year.to_string()),
-            None => {},
+            Some(year) => result.push_str(&year.to_string()),
+            None => {}
         };
 
         result.push(';');
 
         match self.date_of_birth {
             Some(ref date) => result.push_str(&date),
-            None => {},
+            None => {}
         }
 
         result.push(';');
 
         match self.location {
             Some(ref loc) => result.push_str(&loc),
-            None => {},
+            None => {}
         }
 
         result.push(';');
 
         match self.chiptime {
             Some(ref time) => result.push_str(&time),
-            None => {},
+            None => {}
         }
 
-        return result
+        return result;
     }
 }
 
@@ -104,5 +104,6 @@ fn test_to_csv() {
     assert_eq!(athlete.to_csv(), "10;;Muylaert Ward;F;0:39:45;;;;");
     athlete.location = Some("Brussels, Belgium".to_string());
     athlete.chiptime = Some("0:39:44".to_string());
-    assert_eq!(athlete.to_csv(), "10;;Muylaert Ward;F;0:39:45;;;Brussels, Belgium;0:39:44");
+    assert_eq!(athlete.to_csv(),
+               "10;;Muylaert Ward;F;0:39:45;;;Brussels, Belgium;0:39:44");
 }

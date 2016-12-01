@@ -2,9 +2,9 @@ extern crate clap;
 extern crate reqwest;
 
 mod athlete;
-//use athlete::*;
+// use athlete::*;
 mod chronorace;
-//use chronorace::*;
+// use chronorace::*;
 
 use std::io::Read;
 
@@ -14,8 +14,8 @@ fn main() {
         .author("Ward Muylaert")
         .about("Take chronorace results URL and turns it into CSV")
         .arg(clap::Arg::with_name("URL")
-             .required(true)
-             .help("The chronorace URL to parse"))
+            .required(true)
+            .help("The chronorace URL to parse"))
         .get_matches();
 
     // Panic if no URL supplied
@@ -42,4 +42,3 @@ fn main() {
         println!("{}", athlete.to_csv());
     }
 }
-

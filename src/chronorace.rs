@@ -1,4 +1,4 @@
-//extern crate regex;
+// extern crate regex;
 
 use athlete;
 
@@ -31,7 +31,7 @@ pub fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
                 // <tr> tag and <td> tag
                 match cell.rfind(">") {
                     Some(idx) => {
-                        let (_, text) = cell.split_at(idx+1);
+                        let (_, text) = cell.split_at(idx + 1);
                         match text {
                             "" => {
                                 // Assumes the first two are always Pos and Nr
@@ -39,10 +39,10 @@ pub fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
                                 if interestingcolumns.len() == 2 {
                                     interestingcolumns.push(i);
                                 }
-                            },
+                            }
                             "Pos" | "Nr" | "Age" | "Time" | "City" => {
                                 interestingcolumns.push(i);
-                            },
+                            }
                             "Name" => {
                                 // Name can also be in the category column.
                                 // We only care about the first one.
@@ -50,11 +50,11 @@ pub fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
                                     interestingcolumns.push(i);
                                     namefound = true;
                                 }
-                            },
-                            _ => {},
+                            }
+                            _ => {}
                         };
-                    },
-                    None => {},
+                    }
+                    None => {}
                 }
             }
         }
@@ -63,7 +63,7 @@ pub fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
         // The assumption here is that their order will always be the same.
         // That is: Pos, Nr, Gender, Name, Age, Time, City
         if row.contains("<tr class=\"Even\">") || row.contains("<tr class=\"Odd\">") {
-            //println!("Athlete unparsed: {}", row);
+            // println!("Athlete unparsed: {}", row);
             let cells: Vec<&str> = row.split("</td>").collect();
 
             let mut athlete = athlete::Athlete::new();
@@ -73,7 +73,7 @@ pub fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
             let ranklast = rank.len() - 1;
             rank.remove(ranklast);
             athlete.rank = rank.parse().unwrap();
-            //TODO Not everyone has a rank... See how to handle DNF etc
+            // TODO Not everyone has a rank... See how to handle DNF etc
 
             let nr = strip_tags(cells[interestingcolumns[1]].to_string());
             athlete.bib = Some(nr.parse().unwrap());
@@ -99,7 +99,7 @@ pub fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
                 athlete.location = Some(location.to_string());
             }
 
-            //println!("Athlete: {:?}", athlete);
+            // println!("Athlete: {:?}", athlete);
             athletes.push(athlete);
         }
     }
@@ -124,27 +124,27 @@ fn strip_tags(taggedstr: String) -> String {
             };
         }
     }
-    return result.trim().to_string()
+    return result.trim().to_string();
 }
 
 /// Given a chronorace source string, gets the urls for the following pages of the results.
 pub fn parse_page_urls(content: &String) -> Vec<String> {
     let startidx = match content.find("<b>Page: </b>") {
         Some(idx) => idx,
-        None => 0
+        None => 0,
     };
     let (_, afterpage) = content.split_at(startidx);
     let newlineidx = match afterpage.find("\n") {
         Some(idx) => idx,
-        None => 0
+        None => 0,
     };
     let (linksstr, _) = afterpage.split_at(newlineidx);
 
-    if ! linksstr.contains("a href") {
+    if !linksstr.contains("a href") {
         return Vec::new();
     }
 
-    let mut results : Vec<String> = Vec::new();
+    let mut results: Vec<String> = Vec::new();
     for piece in linksstr.split('"') {
         if piece.contains("classement") {
             let mut url = String::new();
@@ -162,12 +162,22 @@ fn test_parse_page_urls() {
     let content = include_str!("test-chronorace.html").to_string();
     let urls = parse_page_urls(&content);
     assert_eq!(urls.len(), 5);
-    assert_eq!(urls[0], "http://www.chronorace.be/Classements/classement.aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=1");
-    assert_eq!(urls[1], "http://www.chronorace.be/Classements/classement.aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=2");
-    assert_eq!(urls[2], "http://www.chronorace.be/Classements/classement.aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=3");
-    assert_eq!(urls[3], "http://www.chronorace.be/Classements/classement.aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=4");
-    assert_eq!(urls[4], "http://www.chronorace.be/Classements/classement.aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=5");
-    //assert!(false);
+    assert_eq!(urls[0],
+               "http://www.chronorace.be/Classements/classement.\
+                aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=1");
+    assert_eq!(urls[1],
+               "http://www.chronorace.be/Classements/classement.\
+                aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=2");
+    assert_eq!(urls[2],
+               "http://www.chronorace.be/Classements/classement.\
+                aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=3");
+    assert_eq!(urls[3],
+               "http://www.chronorace.be/Classements/classement.\
+                aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=4");
+    assert_eq!(urls[4],
+               "http://www.chronorace.be/Classements/classement.\
+                aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=5");
+    // assert!(false);
 }
 
 #[test]
