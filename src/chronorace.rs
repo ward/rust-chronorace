@@ -63,7 +63,7 @@ pub fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
         // Once we reach the rows, we can focus on just those indices.
         // The assumption here is that their order will always be the same.
         // That is: Pos, Nr, Gender, Name, Age, Time, City
-        if row.contains("<tr class=\"Even\">") || row.contains("<tr class=\"Odd\">") {
+        if row.contains("<tr class=\"Even\"") || row.contains("<tr class=\"Odd\"") {
             // println!("Athlete unparsed: {}", row);
             let cells: Vec<&str> = row.split("</td>").collect();
 
@@ -197,4 +197,11 @@ fn test_dnf_parse_athletes() {
     let content = include_str!("./test-chronorace-with-dnf.html").to_string();
     let athletes = parse_athletes(&content);
     assert_eq!(athletes.len(), 298);
+}
+
+#[test]
+fn test_row_highlights_parse_athletes() {
+    let content = include_str!("./test-chronorace-row-highlights.html").to_string();
+    let athletes = parse_athletes(&content);
+    assert_eq!(athletes.len(), 500);
 }
