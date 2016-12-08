@@ -37,8 +37,7 @@ pub fn parse_athletes(content: &str) -> Vec<athlete::Athlete> {
                                 interestingcolumns.push(i);
                             }
                         }
-                        "Pos" | "Nr" | "Age" | "Time" | "City" | "Leef." | "Tijd" |
-                        "Gemeente" => {
+                        "Pos" | "Nr" | "Age" | "Time" | "City" | "Leef." | "Tijd" | "Gemeente" => {
                             interestingcolumns.push(i);
                         }
                         "Name" | "Naam" => {
