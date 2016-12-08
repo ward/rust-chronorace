@@ -45,9 +45,8 @@ impl Athlete {
         result.push_str(&self.rank.to_string());
         result.push(';');
 
-        match self.bib {
-            Some(bib) => result.push_str(&bib.to_string()),
-            None => {}
+        if let Some(bib) = self.bib {
+            result.push_str(&bib.to_string())
         };
 
         result.push(';');
@@ -63,33 +62,29 @@ impl Athlete {
         result.push_str(&self.guntime);
         result.push(';');
 
-        match self.year_of_birth {
-            Some(year) => result.push_str(&year.to_string()),
-            None => {}
+        if let Some(year) = self.year_of_birth {
+            result.push_str(&year.to_string())
         };
 
         result.push(';');
 
-        match self.date_of_birth {
-            Some(ref date) => result.push_str(&date),
-            None => {}
+        if let Some(ref date) = self.date_of_birth {
+            result.push_str(date)
         }
 
         result.push(';');
 
-        match self.location {
-            Some(ref loc) => result.push_str(&loc),
-            None => {}
+        if let Some(ref loc) = self.location {
+            result.push_str(loc)
         }
 
         result.push(';');
 
-        match self.chiptime {
-            Some(ref time) => result.push_str(&time),
-            None => {}
+        if let Some(ref time) = self.chiptime {
+            result.push_str(time)
         }
 
-        return result;
+        result
     }
 }
 

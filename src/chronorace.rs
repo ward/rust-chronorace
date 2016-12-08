@@ -1,6 +1,6 @@
 use athlete;
 
-pub fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
+pub fn parse_athletes(content: &str) -> Vec<athlete::Athlete> {
     // 1. Check what headers are present in the page
     // 2. Link them to the properties we use
     // 3. Parse the athlete results to get the actual values, creating Athlete and adding to the
@@ -27,33 +27,30 @@ pub fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
             for (i, cell) in row.split("</td>").enumerate() {
                 // rfind instead of find, the first one will have both
                 // <tr> tag and <td> tag
-                match cell.rfind(">") {
-                    Some(idx) => {
-                        let (_, text) = cell.split_at(idx + 1);
-                        match text {
-                            "" => {
-                                // Assumes the first two are always Pos and Nr
-                                // and followed by Gender (no header)
-                                if interestingcolumns.len() == 2 {
-                                    interestingcolumns.push(i);
-                                }
-                            }
-                            "Pos" | "Nr" | "Age" | "Time" | "City" | "Leef." | "Tijd" |
-                            "Gemeente" => {
+                if let Some(idx) = cell.rfind('>') {
+                    let (_, text) = cell.split_at(idx + 1);
+                    match text {
+                        "" => {
+                            // Assumes the first two are always Pos and Nr
+                            // and followed by Gender (no header)
+                            if interestingcolumns.len() == 2 {
                                 interestingcolumns.push(i);
                             }
-                            "Name" | "Naam" => {
-                                // Name can also be in the category column.
-                                // We only care about the first one.
-                                if !namefound {
-                                    interestingcolumns.push(i);
-                                    namefound = true;
-                                }
+                        }
+                        "Pos" | "Nr" | "Age" | "Time" | "City" | "Leef." | "Tijd" |
+                        "Gemeente" => {
+                            interestingcolumns.push(i);
+                        }
+                        "Name" | "Naam" => {
+                            // Name can also be in the category column.
+                            // We only care about the first one.
+                            if !namefound {
+                                interestingcolumns.push(i);
+                                namefound = true;
                             }
-                            _ => {}
-                        };
-                    }
-                    None => {}
+                        }
+                        _ => {}
+                    };
                 }
             }
         }
@@ -109,7 +106,7 @@ pub fn parse_athletes(content: &String) -> Vec<athlete::Athlete> {
         }
     }
 
-    return athletes;
+    athletes
 }
 
 fn strip_tags(taggedstr: String) -> String {
@@ -123,23 +120,23 @@ fn strip_tags(taggedstr: String) -> String {
             };
         }
         if in_tag {
-            match chr {
-                '>' => in_tag = false,
-                _ => {}
-            };
+            // like a match where we only care about this possibility
+            if let '>' = chr {
+                in_tag = false
+            }
         }
     }
-    return result.trim().to_string();
+    result.trim().to_string()
 }
 
 /// Given a chronorace source string, gets the urls for the following pages of the results.
-pub fn parse_page_urls(content: &String) -> Vec<String> {
+pub fn parse_page_urls(content: &str) -> Vec<String> {
     let startidx = match content.find("<b>Page: </b>") {
         Some(idx) => idx,
         None => 0,
     };
     let (_, afterpage) = content.split_at(startidx);
-    let newlineidx = match afterpage.find("\n") {
+    let newlineidx = match afterpage.find('\n') {
         Some(idx) => idx,
         None => 0,
     };
