@@ -21,8 +21,6 @@ pub enum Gender {
     Female,
 }
 
-/// Uses Builder pattern for creation of an instance.
-/// https://aturon.github.io/ownership/builders.html
 impl Athlete {
     pub fn new() -> Athlete {
         Athlete {
@@ -88,17 +86,22 @@ impl Athlete {
     }
 }
 
-#[test]
-fn test_to_csv() {
-    let mut athlete = Athlete::new();
-    assert_eq!(athlete.to_csv(), "0;;;M;;;;;");
-    athlete.rank = 10;
-    athlete.name = "Muylaert Ward".to_string();
-    athlete.gender = Gender::Female;
-    athlete.guntime = "0:39:45".to_string();
-    assert_eq!(athlete.to_csv(), "10;;Muylaert Ward;F;0:39:45;;;;");
-    athlete.location = Some("Brussels, Belgium".to_string());
-    athlete.chiptime = Some("0:39:44".to_string());
-    assert_eq!(athlete.to_csv(),
-               "10;;Muylaert Ward;F;0:39:45;;;Brussels, Belgium;0:39:44");
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_to_csv() {
+        let mut athlete = Athlete::new();
+        assert_eq!(athlete.to_csv(), "0;;;M;;;;;");
+        athlete.rank = 10;
+        athlete.name = "Muylaert Ward".to_string();
+        athlete.gender = Gender::Female;
+        athlete.guntime = "0:39:45".to_string();
+        assert_eq!(athlete.to_csv(), "10;;Muylaert Ward;F;0:39:45;;;;");
+        athlete.location = Some("Brussels, Belgium".to_string());
+        athlete.chiptime = Some("0:39:44".to_string());
+        assert_eq!(athlete.to_csv(),
+                   "10;;Muylaert Ward;F;0:39:45;;;Brussels, Belgium;0:39:44");
+    }
 }

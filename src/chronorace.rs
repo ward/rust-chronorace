@@ -1,5 +1,10 @@
 use athlete;
 
+/// Takes the source of a chronorace results page as input. Creates a vector of Athletes that are
+/// listed on that results page. To do so, it first parses out the header of the results table to
+/// know which columns are of interest to us. This needs to be done since the columns are not
+/// consistent across result pages. Next it loops over all the rows (each row is one result),
+/// parses them and creates an Athlete. Finally it adds it to the vector.
 pub fn parse_athletes(content: &str) -> Vec<athlete::Athlete> {
     // 1. Check what headers are present in the page
     // 2. Link them to the properties we use
@@ -108,6 +113,9 @@ pub fn parse_athletes(content: &str) -> Vec<athlete::Athlete> {
     athletes
 }
 
+/// Takes a string and tries to strip html tags. There is nothing special going on here, it just
+/// starts ignoring everything from a < till a >. Does not take comments or javascript into
+/// account.
 fn strip_tags(taggedstr: String) -> String {
     let mut result = String::new();
     let mut in_tag = false;
@@ -158,46 +166,51 @@ pub fn parse_page_urls(content: &str) -> Vec<String> {
     results
 }
 
-#[test]
-fn test_parse_page_urls() {
-    let content = include_str!("test-chronorace.html").to_string();
-    let urls = parse_page_urls(&content);
-    assert_eq!(urls.len(), 5);
-    assert_eq!(urls[0],
-               "http://www.chronorace.be/Classements/classement.\
-                aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=1");
-    assert_eq!(urls[1],
-               "http://www.chronorace.be/Classements/classement.\
-                aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=2");
-    assert_eq!(urls[2],
-               "http://www.chronorace.be/Classements/classement.\
-                aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=3");
-    assert_eq!(urls[3],
-               "http://www.chronorace.be/Classements/classement.\
-                aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=4");
-    assert_eq!(urls[4],
-               "http://www.chronorace.be/Classements/classement.\
-                aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=5");
-    // assert!(false);
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn test_parse_athletes() {
-    let content = include_str!("test-chronorace.html").to_string();
-    let athletes = parse_athletes(&content);
-    assert_eq!(athletes.len(), 500);
-}
+    #[test]
+    fn test_parse_page_urls() {
+        let content = include_str!("test-chronorace.html").to_string();
+        let urls = parse_page_urls(&content);
+        assert_eq!(urls.len(), 5);
+        assert_eq!(urls[0],
+                   "http://www.chronorace.be/Classements/classement.\
+                    aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=1");
+        assert_eq!(urls[1],
+                   "http://www.chronorace.be/Classements/classement.\
+                    aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=2");
+        assert_eq!(urls[2],
+                   "http://www.chronorace.be/Classements/classement.\
+                    aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=3");
+        assert_eq!(urls[3],
+                   "http://www.chronorace.be/Classements/classement.\
+                    aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=4");
+        assert_eq!(urls[4],
+                   "http://www.chronorace.be/Classements/classement.\
+                    aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=5");
+        // assert!(false);
+    }
 
-#[test]
-fn test_dnf_parse_athletes() {
-    let content = include_str!("./test-chronorace-with-dnf.html").to_string();
-    let athletes = parse_athletes(&content);
-    assert_eq!(athletes.len(), 298);
-}
+    #[test]
+    fn test_parse_athletes() {
+        let content = include_str!("test-chronorace.html").to_string();
+        let athletes = parse_athletes(&content);
+        assert_eq!(athletes.len(), 500);
+    }
 
-#[test]
-fn test_row_highlights_parse_athletes() {
-    let content = include_str!("./test-chronorace-row-highlights.html").to_string();
-    let athletes = parse_athletes(&content);
-    assert_eq!(athletes.len(), 500);
+    #[test]
+    fn test_dnf_parse_athletes() {
+        let content = include_str!("./test-chronorace-with-dnf.html").to_string();
+        let athletes = parse_athletes(&content);
+        assert_eq!(athletes.len(), 298);
+    }
+
+    #[test]
+    fn test_row_highlights_parse_athletes() {
+        let content = include_str!("./test-chronorace-row-highlights.html").to_string();
+        let athletes = parse_athletes(&content);
+        assert_eq!(athletes.len(), 500);
+    }
 }
