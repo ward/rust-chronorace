@@ -42,7 +42,7 @@ pub fn parse_athletes(content: &str) -> Vec<athlete::Athlete> {
                                 interestingcolumns.push(i);
                             }
                         }
-                        "Pos" | "Nr" | "Age" | "Time" | "City" | "Leef." | "Tijd" | "Gemeente" => {
+                        "Pos" | "Nr" | "Age" | "Time" | "City" | "Leef." | "Tijd" | "Gemeente" | "Real" | "Werkelijke" => {
                             interestingcolumns.push(i);
                         }
                         "Name" | "Naam" => {
@@ -59,11 +59,11 @@ pub fn parse_athletes(content: &str) -> Vec<athlete::Athlete> {
             }
         }
 
-        assert_eq!(interestingcolumns.len(), 7);
+        assert!(interestingcolumns.len() == 7 || interestingcolumns.len() == 8);
 
         // Once we reach the rows, we can focus on just those indices.
         // The assumption here is that their order will always be the same.
-        // That is: Pos, Nr, Gender, Name, Age, Time, City
+        // That is: Pos, Nr, Gender, Name, Age, [Chip time], Time, City
         if row.contains("<tr class=\"Even\"") || row.contains("<tr class=\"Odd\"") {
             // println!("Athlete unparsed: {}", row);
             let cells: Vec<&str> = row.split("</td>").collect();
@@ -78,8 +78,6 @@ pub fn parse_athletes(content: &str) -> Vec<athlete::Athlete> {
                 Ok(r) => athlete.rank = r,
                 _ => continue,
             };
-            // athlete.rank = rank.parse().unwrap();
-            // TODO Not everyone has a rank... See how to handle DNF etc
 
             let nr = strip_tags(cells[interestingcolumns[1]].to_string());
             athlete.bib = Some(nr.parse().unwrap());
@@ -91,7 +89,24 @@ pub fn parse_athletes(content: &str) -> Vec<athlete::Athlete> {
 
             athlete.name = strip_tags(cells[interestingcolumns[3]].to_string());
 
-            let mut guntime = strip_tags(cells[interestingcolumns[5]].to_string());
+            // This gets a bit hackish, reckon this needs a refactoring
+            // Essentially: if there is a chip time, gun and location move up a spot
+            let mut gunidx = 5;
+            let mut locationidx = 6;
+            if interestingcolumns.len() == 8 {
+                let mut chiptime = strip_tags(cells[interestingcolumns[5]].to_string());
+                if chiptime.chars().filter(|&c| c == ':').count() == 1 {
+                    let time = chiptime;
+                    chiptime = "0:".to_string();
+                    chiptime.push_str(&time);
+                }
+                athlete.chiptime = Some(chiptime);
+
+                gunidx = 6;
+                locationidx = 7;
+            }
+
+            let mut guntime = strip_tags(cells[interestingcolumns[gunidx]].to_string());
             if guntime.chars().filter(|&c| c == ':').count() == 1 {
                 let time = guntime;
                 guntime = "0:".to_string();
@@ -99,7 +114,7 @@ pub fn parse_athletes(content: &str) -> Vec<athlete::Athlete> {
             }
             athlete.guntime = guntime;
 
-            let location = strip_tags(cells[interestingcolumns[6]].to_string());
+            let location = strip_tags(cells[interestingcolumns[locationidx]].to_string());
             let location = location.trim();
             if location != "" {
                 athlete.location = Some(location.to_string());
@@ -212,5 +227,16 @@ mod tests {
         let content = include_str!("./test-chronorace-row-highlights.html").to_string();
         let athletes = parse_athletes(&content);
         assert_eq!(athletes.len(), 500);
+    }
+
+    #[test]
+    fn test_chip_time_parse() {
+        let content = include_str!("test-chip-time.html").to_string();
+        let athletes = parse_athletes(&content);
+        assert_eq!(athletes.len(), 500);
+        let ref athlete_rutten = athletes[347];
+        assert_eq!(athlete_rutten.rank, 348);
+        assert_eq!(athlete_rutten.chiptime, Some("0:51:35".to_string()));
+        assert_eq!(athlete_rutten.guntime, "0:51:44");
     }
 }
