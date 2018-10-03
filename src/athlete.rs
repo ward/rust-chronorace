@@ -34,54 +34,62 @@ impl Athlete {
             chiptime: None,
         }
     }
+}
 
-    // Plaats;Borstnummer;Achternaam Voornaam;Geslacht (M/F);Bruto tijd (hh:mm:ss);geboortejaar
-    // (yyyy);geboortedatum(yyyy-mm-dd);woonplaats;Netto tijd
-    pub fn to_csv(&self) -> String {
-        let mut result = String::new();
-        result.push_str(&self.rank.to_string());
-        result.push(';');
-
-        if let Some(bib) = self.bib {
-            result.push_str(&bib.to_string())
-        };
-
-        result.push(';');
-        result.push_str(&self.name);
-        result.push(';');
-
-        match self.gender {
-            Gender::Male => result.push('M'),
-            Gender::Female => result.push('F'),
-        };
-
-        result.push(';');
-        result.push_str(&self.guntime);
-        result.push(';');
-
-        if let Some(year) = self.year_of_birth {
-            result.push_str(&year.to_string())
-        };
-
-        result.push(';');
-
-        if let Some(ref date) = self.date_of_birth {
-            result.push_str(date)
+/// Trait to avoid some code duplication in building the final CSV file.
+/// For the basic types this should just be the representation within the CSV file.
+/// For the final row, this is a combination with the separator and such.
+pub trait ToCSV {
+    // Perhaps cleaner/clearer with a ToCSVElement and ToCSVRow?
+    /// Turn this type into its CSV representation
+    fn to_csv(&self) -> String;
+}
+impl ToCSV for Gender {
+    fn to_csv(&self) -> String {
+        match self {
+            Gender::Male => "M".to_owned(),
+            Gender::Female => "F".to_owned(),
         }
-
-        result.push(';');
-
-        if let Some(ref loc) = self.location {
-            result.push_str(loc)
+    }
+}
+impl ToCSV for u32 {
+    fn to_csv(&self) -> String {
+        self.to_string()
+    }
+}
+impl ToCSV for u16 {
+    fn to_csv(&self) -> String {
+        self.to_string()
+    }
+}
+impl ToCSV for String {
+    fn to_csv(&self) -> String {
+        self.to_owned()
+    }
+}
+impl<T: ToCSV> ToCSV for Option<T> {
+    fn to_csv(&self) -> String {
+        match self {
+            Some(x) => x.to_csv(),
+            None => "".to_owned(),
         }
-
-        result.push(';');
-
-        if let Some(ref time) = self.chiptime {
-            result.push_str(time)
-        }
-
-        result
+    }
+}
+impl ToCSV for Athlete {
+    fn to_csv(&self) -> String {
+        // Plaats;Borstnummer;Achternaam Voornaam;Geslacht (M/F);Bruto tijd (hh:mm:ss);geboortejaar
+        // (yyyy);geboortedatum(yyyy-mm-dd);woonplaats;Netto tijd
+        vec![
+            self.rank.to_csv(),
+            self.bib.to_csv(),
+            self.name.to_csv(),
+            self.gender.to_csv(),
+            self.guntime.to_csv(),
+            self.year_of_birth.to_csv(),
+            self.date_of_birth.to_csv(),
+            self.location.to_csv(),
+            self.chiptime.to_csv(),
+        ].join(";")
     }
 }
 

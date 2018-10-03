@@ -4,6 +4,7 @@ extern crate reqwest;
 mod athlete;
 mod chronorace;
 
+use athlete::ToCSV;
 use std::io::Read;
 
 fn main() {
