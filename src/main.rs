@@ -9,7 +9,7 @@ use std::io::Read;
 
 fn main() {
     let matches = clap::App::new("rust-chronorace")
-        .version("0.1.0")
+        .version("0.2.0")
         .author("Ward Muylaert")
         .about("Take chronorace results URL and turns it into CSV")
         .arg(

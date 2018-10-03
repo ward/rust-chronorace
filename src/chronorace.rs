@@ -67,7 +67,6 @@ pub fn parse_athletes(content: &str) -> Vec<athlete::Athlete> {
         // The assumption here is that their order will always be the same.
         // That is: Pos, Nr, Gender, Name, Age, [Chip time], Time, City
         if row.contains("<tr class=\"Even\"") || row.contains("<tr class=\"Odd\"") {
-            // println!("Athlete unparsed: {}", row);
             let cells: Vec<&str> = row.split("</td>").collect();
 
             let mut athlete = athlete::Athlete::new();
@@ -122,7 +121,6 @@ pub fn parse_athletes(content: &str) -> Vec<athlete::Athlete> {
                 athlete.location = Some(location.to_string());
             }
 
-            // println!("Athlete: {:?}", athlete);
             athletes.push(athlete);
         }
     }
@@ -217,7 +215,6 @@ mod tests {
             "http://www.chronorace.be/Classements/classement.\
              aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=5"
         );
-        // assert!(false);
     }
 
     #[test]
