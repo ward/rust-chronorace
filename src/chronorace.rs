@@ -10,7 +10,9 @@ pub fn parse_athletes(content: &str) -> Vec<athlete::Athlete> {
     // 2. Link them to the properties we use
     // 3. Parse the athlete results to get the actual values, creating Athlete and adding to the
     //    Vec.
-    let headerstartidx = content.find("<tr class=\"HeaderTitreClassement\">").unwrap();
+    let headerstartidx = content
+        .find("<tr class=\"HeaderTitreClassement\">")
+        .unwrap();
     let (_, headeronwards) = content.split_at(headerstartidx);
     let endtable = headeronwards.find("</table>").unwrap();
     let (resultstable, _) = headeronwards.split_at(endtable);
@@ -23,7 +25,6 @@ pub fn parse_athletes(content: &str) -> Vec<athlete::Athlete> {
     let mut athletes = Vec::new();
 
     for row in resultstable.split("</tr>") {
-
         // In the header, we check which columns have the information we
         // are interested in. We need to do this since the columns are not
         // consistent across multiple results pages...
@@ -42,7 +43,8 @@ pub fn parse_athletes(content: &str) -> Vec<athlete::Athlete> {
                                 interestingcolumns.push(i);
                             }
                         }
-                        "Pos" | "Nr" | "Age" | "Time" | "City" | "Leef." | "Tijd" | "Gemeente" | "Real" | "Werkelijke" => {
+                        "Pos" | "Nr" | "Age" | "Time" | "City" | "Leef." | "Tijd" | "Gemeente"
+                        | "Real" | "Werkelijke" => {
                             interestingcolumns.push(i);
                         }
                         "Name" | "Naam" => {
@@ -190,21 +192,31 @@ mod tests {
         let content = include_str!("test-chronorace.html").to_string();
         let urls = parse_page_urls(&content);
         assert_eq!(urls.len(), 5);
-        assert_eq!(urls[0],
-                   "http://www.chronorace.be/Classements/classement.\
-                    aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=1");
-        assert_eq!(urls[1],
-                   "http://www.chronorace.be/Classements/classement.\
-                    aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=2");
-        assert_eq!(urls[2],
-                   "http://www.chronorace.be/Classements/classement.\
-                    aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=3");
-        assert_eq!(urls[3],
-                   "http://www.chronorace.be/Classements/classement.\
-                    aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=4");
-        assert_eq!(urls[4],
-                   "http://www.chronorace.be/Classements/classement.\
-                    aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=5");
+        assert_eq!(
+            urls[0],
+            "http://www.chronorace.be/Classements/classement.\
+             aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=1"
+        );
+        assert_eq!(
+            urls[1],
+            "http://www.chronorace.be/Classements/classement.\
+             aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=2"
+        );
+        assert_eq!(
+            urls[2],
+            "http://www.chronorace.be/Classements/classement.\
+             aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=3"
+        );
+        assert_eq!(
+            urls[3],
+            "http://www.chronorace.be/Classements/classement.\
+             aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=4"
+        );
+        assert_eq!(
+            urls[4],
+            "http://www.chronorace.be/Classements/classement.\
+             aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=5"
+        );
         // assert!(false);
     }
 

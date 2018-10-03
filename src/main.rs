@@ -13,10 +13,11 @@ fn main() {
         .version("0.1.0")
         .author("Ward Muylaert")
         .about("Take chronorace results URL and turns it into CSV")
-        .arg(clap::Arg::with_name("URL")
-            .required(true)
-            .help("The chronorace URL to parse"))
-        .get_matches();
+        .arg(
+            clap::Arg::with_name("URL")
+                .required(true)
+                .help("The chronorace URL to parse"),
+        ).get_matches();
 
     // Panic if no URL supplied
     let url = matches.value_of("URL").unwrap();

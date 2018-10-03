@@ -5,8 +5,8 @@
 pub struct Athlete {
     pub rank: u32, // required
     pub bib: Option<u32>,
-    pub name: String, // Last name first name, required
-    pub gender: Gender, // Male / female, required
+    pub name: String,    // Last name first name, required
+    pub gender: Gender,  // Male / female, required
     pub guntime: String, // Laziness just copies the string, required
     pub year_of_birth: Option<u16>,
     pub date_of_birth: Option<String>, // yyyy-mm-dd
@@ -14,8 +14,7 @@ pub struct Athlete {
     pub chiptime: Option<String>, // Laziness, just copy the string
 }
 
-#[derive(Debug)]
-#[derive(PartialEq)]
+#[derive(Debug, PartialEq)]
 pub enum Gender {
     Male,
     Female,
@@ -101,7 +100,9 @@ mod tests {
         assert_eq!(athlete.to_csv(), "10;;Muylaert Ward;F;0:39:45;;;;");
         athlete.location = Some("Brussels, Belgium".to_string());
         athlete.chiptime = Some("0:39:44".to_string());
-        assert_eq!(athlete.to_csv(),
-                   "10;;Muylaert Ward;F;0:39:45;;;Brussels, Belgium;0:39:44");
+        assert_eq!(
+            athlete.to_csv(),
+            "10;;Muylaert Ward;F;0:39:45;;;Brussels, Belgium;0:39:44"
+        );
     }
 }
