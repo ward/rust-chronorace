@@ -2,9 +2,7 @@ extern crate clap;
 extern crate reqwest;
 
 mod athlete;
-// use athlete::*;
 mod chronorace;
-// use chronorace::*;
 
 use std::io::Read;
 

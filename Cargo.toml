@@ -4,5 +4,5 @@ version = "0.1.0"
 authors = ["Ward Muylaert <ward.muylaert@gmail.com>"]
 
 [dependencies]
-clap = "2.19.0"
-reqwest = "0.1.0"
+clap = "2.32.0"
+reqwest = "0.9.2"
