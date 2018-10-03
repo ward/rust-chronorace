@@ -10,13 +10,18 @@ install stable` probably works. If it does not, follow rustup's instructions.
 
 # Keep Things In Order
 
+First, add some extra tools to `cargo`:
+
+* [rustfmt](https://github.com/rust-lang-nursery/rustfmt): `rustup component
+  add rustfmt-preview`
+* [clippy](https://github.com/rust-lang-nursery/rust-clippy): `rustup component
+  add clippy-preview`
+
+Next, try to ensure all these work before pushing code.
+
 * Run the tests with `cargo test`.
-* Run `rustfmt` to adhere to Rust's "proper" styles.
-* Run [clippy](https://github.com/Manishearth/rust-clippy). Note that it only
-  works with Rust nightly. This is why it is a good idea to use rustup, you can
-  easily install stable and nightly side-by-side and manage them easily. Then
-  it is a matter of `rustup run nightly cargo install clippy` to install clippy
-  and `rustup run nightly cargo clippy` to run the linting tool.
+* Run `cargo fmt` to adhere to Rust's "proper" styles.
+* Run `cargo clippy` for some linting.
 
 # Use
 
