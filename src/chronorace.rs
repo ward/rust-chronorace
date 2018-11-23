@@ -155,7 +155,10 @@ fn strip_tags(taggedstr: String) -> String {
 pub fn parse_page_urls(content: &str) -> Vec<String> {
     let startidx = match content.find("<b>Page: </b>") {
         Some(idx) => idx,
-        None => 0,
+        None => match content.find("<b>Bladzijde: </b>") {
+                Some(idx) => idx,
+                None => 0,
+            },
     };
     let (_, afterpage) = content.split_at(startidx);
     let newlineidx = match afterpage.find('\n') {
@@ -214,6 +217,16 @@ mod tests {
             urls[4],
             "http://www.chronorace.be/Classements/classement.\
              aspx?eventId=1186557729972765&mode=large&IdClassement=13026&srch=&scope=All&page=5"
+        );
+    }
+    #[test]
+    fn test_parse_page_urls_dutch() {
+        let content = include_str!("test-chronorace-dutch.html").to_string();
+        let urls = parse_page_urls(&content);
+        assert_eq!(urls.len(), 1);
+        assert_eq!(
+            urls[0],
+            "http://www.chronorace.be/Classements/classement.aspx?eventId=1187403838543924&lng=NL&mode=large&IdClassement=17321&srch=&scope=All&page=1"
         );
     }
 
